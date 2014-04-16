@@ -13,7 +13,7 @@ Mac
 v0.1: https://s3.amazonaws.com/captemulation/dmg/Encrypted_Text_Editor.dmg
 
 
-Building you self
+Building yourself
 ========
 You will need to build Crypto++ yourself.  I used Crypto++ 5.6.2.  Adjust the CRYPTOPP_LIB variable in encrypted-text-editor for your environment
 
