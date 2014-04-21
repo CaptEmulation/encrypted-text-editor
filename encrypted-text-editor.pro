@@ -8,12 +8,14 @@ macx {
 HEADERS       = mainwindow.h \
                 mdichild.h \
     cryptoaes.h \
-    passworddialog.h
+    passworddialog.h \
+    finddialog.h
 SOURCES       = main.cpp \
                 mainwindow.cpp \
                 mdichild.cpp \
     cryptoaes.cpp \
-    passworddialog.cpp
+    passworddialog.cpp \
+    finddialog.cpp
 RESOURCES     = mdi.qrc
 
 # install
@@ -37,4 +39,5 @@ OTHER_FILES += \
     icon.icns
 
 FORMS += \
-    passworddialog.ui
+    passworddialog.ui \
+    finddialog.ui

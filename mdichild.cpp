@@ -43,6 +43,8 @@
 #include "mdichild.h"
 #include "cryptoaes.h"
 #include "passworddialog.h"
+#include "finddialog.h"
+#include "finddialog.h"
 #include "cryptoaes.h"
 #include "sha.h"
 using CryptoPP::SHA256;
@@ -55,7 +57,10 @@ public:
 
     QString m_fileName;
     PasswordDialog *m_passwordDialog;
+    FindDialog *m_findDialog;
     QByteArray m_key;
+    QTextCursor m_lastFindCursor;
+    QString m_lastFindText;
 
     QString fileName() const {
         return m_fileName;
@@ -77,6 +82,17 @@ public:
         }
     }
 
+    FindDialog *findDialog() const {
+        return m_findDialog;
+    }
+
+    void setFindDialog(FindDialog *findDialog) {
+        if (findDialog != m_findDialog) {
+            m_findDialog = findDialog;
+        }
+    }
+
+
     QByteArray key() {
         return m_key;
     }
@@ -84,6 +100,26 @@ public:
     void setKey(QByteArray key) {
         if (m_key != key) {
             m_key = key;
+        }
+    }
+
+    QTextCursor lastFindCursor() {
+        return m_lastFindCursor;
+    }
+
+    void setLastFindCursor(QTextCursor cursor) {
+        if (m_lastFindCursor != cursor) {
+            m_lastFindCursor = cursor;
+        }
+    }
+
+    QString lastFindText() {
+        return m_lastFindText;
+    }
+
+    void setLastFindText(QString lastFindText) {
+        if (m_lastFindText != lastFindText) {
+            m_lastFindText = lastFindText;
         }
     }
 
@@ -95,40 +131,80 @@ public:
         qDebug() << "Key length" << key().length();
     }
 
-    void destroyDialog() {
+    void destroyPasswordDialog() {
         passwordDialog()->close();
         passwordDialog()->deleteLater();
         setPasswordDialog(0);
     }
 
+    void destroyFindFialog() {
+        if (findDialog()) {
+            findDialog()->close();
+            findDialog()->deleteLater();
+            setFindDialog(0);
+        }
+    }
+
+    void findAccept() {
+        setLastFindText(findDialog()->findText());
+        findNext();
+    }
+
+    void findNext() {
+        if (lastFindText().length()) {
+            setLastFindCursor(self->document()->find(lastFindText(), lastFindCursor()));
+            self->setTextCursor(lastFindCursor());
+        }
+        destroyFindFialog();
+    }
+
+    void findReject() {
+        destroyFindFialog();
+    }
+
+    void find() {
+        createFindDialog();
+    }
+
+    void createFindDialog() {
+        setFindDialog(new FindDialog(self));
+        QObject::connect(findDialog(), SIGNAL(accepted()), self, SLOT(findAccept()));
+        QObject::connect(findDialog(), SIGNAL(rejected()), self, SLOT(findReject()));
+        findDialog()->show();
+    }
+
     void loadAccept() {
         createKey();
         self->loadFile(fileName());
-        destroyDialog();
+        destroyPasswordDialog();
     }
 
     void loadReject() {
-        destroyDialog();
+        destroyPasswordDialog();
     }
 
     void saveAccept() {
         createKey();
         self->saveFile(fileName());
-        destroyDialog();
+        destroyPasswordDialog();
     }
 
     void saveReject() {
-        destroyDialog();
+        destroyPasswordDialog();
+    }
+
+    void createPasswordDialog() {
+        setPasswordDialog(new PasswordDialog(self));
+        QObject::connect(passwordDialog(), SIGNAL(accepted()), self, SLOT(loadAccept()));
+        QObject::connect(passwordDialog(), SIGNAL(rejected()), self, SLOT(loadReject()));
+        passwordDialog()->show();
     }
 
     void openPasswordDialogForLoad(QString fileName) {
         if (!passwordDialog()) {
             setFileName(fileName);
-            setPasswordDialog(new PasswordDialog(self));
-            QObject::connect(passwordDialog(), SIGNAL(accepted()), self, SLOT(loadAccept()));
-            QObject::connect(passwordDialog(), SIGNAL(rejected()), self, SLOT(loadReject()));
-            passwordDialog()->show();
-        }else if (key().length()) {
+            createPasswordDialog();
+        } else if (key().length()) {
             self->loadFile(fileName);
         }
     }
@@ -136,10 +212,7 @@ public:
     void openPasswordDialogForSave(QString fileName) {
         if (!passwordDialog()) {
             setFileName(fileName);
-            setPasswordDialog(new PasswordDialog(self));
-            QObject::connect(passwordDialog(), SIGNAL(accepted()), self, SLOT(saveAccept()));
-            QObject::connect(passwordDialog(), SIGNAL(rejected()), self, SLOT(saveReject()));
-            passwordDialog()->show();
+            createPasswordDialog();
         } else if (key().length()) {
             self->saveFile(fileName);
         }
@@ -151,6 +224,7 @@ MdiChild::MdiChild() :
 {
     p->self = this;
     p->m_passwordDialog = 0;
+    p->m_findDialog = 0;
     setAttribute(Qt::WA_DeleteOnClose);
     isUntitled = true;
 }
@@ -221,6 +295,16 @@ bool MdiChild::saveAs()
     return true;
 }
 
+void MdiChild::find()
+{
+    p->find();
+}
+
+void MdiChild::findNext()
+{
+    p->findNext();
+}
+
 bool MdiChild::saveFile(const QString &fileName)
 {
     QFile file(fileName);
@@ -279,6 +363,16 @@ void MdiChild::saveAccept()
 void MdiChild::saveReject()
 {
     p->saveReject();;
+}
+
+void MdiChild::findAccept()
+{
+    p->findAccept();
+}
+
+void MdiChild::findReject()
+{
+    p->findReject();
 }
 
 bool MdiChild::maybeSave()

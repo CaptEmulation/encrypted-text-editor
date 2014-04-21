@@ -70,6 +70,8 @@ private slots:
     void open();
     void save();
     void saveAs();
+    void find();
+    void findNext();
 #ifndef QT_NO_CLIPBOARD
     void cut();
     void copy();
@@ -106,6 +108,8 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *exitAct;
+    QAction *findAct;
+    QAction *findNextAct;
 #ifndef QT_NO_CLIPBOARD
     QAction *cutAct;
     QAction *copyAct;

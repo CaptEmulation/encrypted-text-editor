@@ -58,6 +58,8 @@ public:
     bool load(const QString &fileName);
     bool save();
     bool saveAs();
+    void find();
+    void findNext();
 
     QString userFriendlyCurrentFile();
     QString currentFile() { return curFile; }
@@ -71,6 +73,8 @@ private slots:
     void loadReject();
     void saveAccept();
     void saveReject();
+    void findAccept();
+    void findReject();
 
 private:
     bool loadFile(const QString &fileName);

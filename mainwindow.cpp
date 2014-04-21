@@ -129,6 +129,20 @@ void MainWindow::saveAs()
         statusBar()->showMessage(tr("File saved"), 2000);
 }
 
+void MainWindow::find()
+{
+    if (activeMdiChild()) {
+        activeMdiChild()->find();
+    }
+}
+
+void MainWindow::findNext()
+{
+    if (activeMdiChild()) {
+        activeMdiChild()->findNext();
+    }
+}
+
 #ifndef QT_NO_CLIPBOARD
 void MainWindow::cut()
 {
@@ -259,6 +273,16 @@ void MainWindow::createActions()
     connect(exitAct, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
 //! [0]
 
+    findAct = new QAction(QIcon(":/images/search.png"), tr("&Find"), this);
+    findAct->setShortcuts(QKeySequence::Find);
+    findAct->setStatusTip(tr("Search for content"));
+    connect(findAct, SIGNAL(triggered()), this, SLOT(find()));
+
+    findNextAct = new QAction(QIcon(":/images/search.png"), tr("Find N&ext"), this);
+    findNextAct->setShortcuts(QKeySequence::FindNext);
+    findNextAct->setStatusTip(tr("next item"));
+    connect(findNextAct, SIGNAL(triggered()), this, SLOT(findNext()));
+
 #ifndef QT_NO_CLIPBOARD
     cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
     cutAct->setShortcuts(QKeySequence::Cut);
@@ -339,7 +363,10 @@ void MainWindow::createMenus()
     editMenu->addAction(cutAct);
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
+    editMenu->addSeparator();
 #endif
+    editMenu->addAction(findAct);
+    editMenu->addAction(findNextAct);
 
     windowMenu = menuBar()->addMenu(tr("&Window"));
     updateWindowMenu();
@@ -359,12 +386,13 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(openAct);
     fileToolBar->addAction(saveAct);
 
-#ifndef QT_NO_CLIPBOARD
     editToolBar = addToolBar(tr("Edit"));
+#ifndef QT_NO_CLIPBOARD
     editToolBar->addAction(cutAct);
     editToolBar->addAction(copyAct);
     editToolBar->addAction(pasteAct);
 #endif
+    editToolBar->addAction(findAct);
 }
 
 void MainWindow::createStatusBar()
