@@ -1,0 +1,37 @@
+{
+	NSPrincipalClass = NSApplication;
+	CFBundleIdentifier = "com.captemulation.encrypted-text-editor";
+	"UTExportedTypeDeclarations" = (
+		{
+			UTTypeConformsTo = (
+				"public.data",
+			);
+			UTTypeIdentifier = "com.captemulation.aes";
+			UTTypeIconFile = "icon.icns";
+			UTTypeDescription = "AES encrypted text file";
+			"UTTypeTagSpecification" = {
+				"public.filename-extension" = (
+					aes,
+				);
+			};
+		},
+	);
+	CFBundleIconFile = "icon.icns";
+	"Bundle creator OS Type code" = "????";
+	"CFBundleInfoDictionaryVersion" = "6.0";
+	"LSApplicationCategoryType" = "public.app-category.utilities";
+	CFBundleExecutable = "Encrypted Text Editor";
+	CFBundlePackageType = APPL;
+	"CFBundleGetInfoString" = "Created by CaptEmulation";
+	"CFBundleDocumentTypes" = (
+		{
+			CFBundleTypeName = "AES encrypted text file";
+			LSItemContentTypes = (
+				"com.captemulation.aes",
+			);
+			CFBundleTypeRole = Editor;
+			CFBundleTypeIconFile = "icon.icns";
+			LSHandlerRank = Owner;
+		},
+	);
+}

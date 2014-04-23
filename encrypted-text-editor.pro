@@ -1,9 +1,11 @@
 QT += widgets network
 
 macx {
+  QMAKE_INFO_PLIST = Info-app.plist
   ICON = icon.icns
-  TARGET = "Encrypted Text Editor"
 }
+
+TARGET = "Encrypted Text Editor"
 
 HEADERS       = mainwindow.h \
                 mdichild.h \
