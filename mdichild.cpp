@@ -193,17 +193,17 @@ public:
         destroyPasswordDialog();
     }
 
-    void createPasswordDialog() {
+    void createPasswordDialog(const char *acceptSlot, const char *rejectSlot) {
         setPasswordDialog(new PasswordDialog(self));
-        QObject::connect(passwordDialog(), SIGNAL(accepted()), self, SLOT(loadAccept()));
-        QObject::connect(passwordDialog(), SIGNAL(rejected()), self, SLOT(loadReject()));
+        QObject::connect(passwordDialog(), SIGNAL(accepted()), self, acceptSlot);
+        QObject::connect(passwordDialog(), SIGNAL(rejected()), self, rejectSlot);
         passwordDialog()->show();
     }
 
     void openPasswordDialogForLoad(QString fileName) {
         if (!passwordDialog()) {
             setFileName(fileName);
-            createPasswordDialog();
+            createPasswordDialog(SLOT(loadAccept()), SLOT(loadReject()));
         } else if (key().length()) {
             self->loadFile(fileName);
         }
@@ -212,7 +212,7 @@ public:
     void openPasswordDialogForSave(QString fileName) {
         if (!passwordDialog()) {
             setFileName(fileName);
-            createPasswordDialog();
+            createPasswordDialog(SLOT(saveAccept()), SLOT(saveReject()));
         } else if (key().length()) {
             self->saveFile(fileName);
         }
